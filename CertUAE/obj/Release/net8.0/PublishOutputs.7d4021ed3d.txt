@@ -1,0 +1,15 @@
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\CertUAE.exe
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\CertUAE.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\CertUAE.deps.json
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\CertUAE.runtimeconfig.json
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\CertUAE.pdb
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.Core.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.DocumentLayoutAnalysis.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.Fonts.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.Package.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.Tokenization.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.Tokens.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\UglyToad.PdfPig.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\SixLabors.Fonts.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\SixLabors.ImageSharp.dll
+C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Release\net8.0\publish\SixLabors.ImageSharp.Drawing.dll
