@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CertUAE</id>
+    <version>1.0.0</version>
+    <authors>CertUAE</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="7b5574f0918aed1e9f1d7a6ff407e6ea68b87b7d" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="CsvHelper" version="33.1.0" exclude="Build,Analyzers" />
+        <dependency id="PdfPig" version="0.1.10" exclude="Build,Analyzers" />
+        <dependency id="SixLabors.ImageSharp" version="3.1.9" exclude="Build,Analyzers" />
+        <dependency id="SixLabors.ImageSharp.Drawing" version="2.1.6" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Debug\net8.0\CertUAE.runtimeconfig.json" target="lib\net8.0\CertUAE.runtimeconfig.json" />
+    <file src="C:\Users\DELL\source\repos\CertUAE\CertUAE\bin\Debug\net8.0\CertUAE.dll" target="lib\net8.0\CertUAE.dll" />
+  </files>
+</package>

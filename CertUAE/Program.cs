@@ -11,6 +11,7 @@ using CsvHelper.Configuration;
 using System.Globalization;
 using UglyToad.PdfPig; // Para PDF
 
+// dotnet ef dbcontext scaffold "Server=localhost;Port=3306;Database=bd_limpia_snr;Uid=root;Pwd=;" Pomelo.EntityFrameworkCore.MySql -o Models -t Anotacion,CapaDeTexto,CodigoNaturalezaJuridica -c CertDbContext --no-onconfiguring
 public class FileScanner
 {
     public static void Main(string[] args)
