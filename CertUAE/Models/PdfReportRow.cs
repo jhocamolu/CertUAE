@@ -23,7 +23,10 @@ namespace CertUAE.Models
         public string PdfSubject { get; set; }
         public string PdfCreator { get; set; }
         public string PdfProducer { get; set; }
+        public string PdfHashType { get; set; }
+        public string PdfHash { get; set; }
         public DateTime? PdfCreationDate { get; set; }
         public DateTime? PdfModificationDate { get; set; }
+        public string PdfDescription { get; set; }
     }
 }

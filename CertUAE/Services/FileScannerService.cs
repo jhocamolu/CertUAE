@@ -21,6 +21,7 @@ namespace CertUAE.Services
     {
         private readonly IDatabaseService _databaseService;
         private readonly IFileAnalysisUtils _fileAnalysisUtils;
+        private List<string> directories { get; set; }
 
         public FileScannerService(IDatabaseService databaseService, IFileAnalysisUtils fileAnalysisUtils)
         {
@@ -38,22 +39,21 @@ namespace CertUAE.Services
                 Console.WriteLine($"Error: La ruta '{targetDirectory}' no es un directorio válido o está vacía.");
                 return;
             }
-
-            ValidarEstructuraDirectorio(targetDirectory);
+            List<string> dirs = new List<string>(Directory.EnumerateDirectories(targetDirectory));
+            dirs.Remove(dirs.First(x => x.ToLower().Contains("System Volume Information".ToLower())));
+            dirs.Remove(dirs.First(x => x.ToLower().Contains("$Recycle.Bin".ToLower())));
+            this.directories = Directories(dirs);
             ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
         }
 
-        private void ValidarEstructuraDirectorio(string targetDirectory)
+        public List<string> Directories(List<string> dirs)
         {
-            string[] carpetasObligatorias = new[] { "PDF", "TIFF", "SQL", "XLSX" };
-            foreach (string carpeta in carpetasObligatorias)
+            List<string> result = new List<string>();
+            foreach (string dir in dirs)
             {
-                string ruta = Path.Combine(targetDirectory, carpeta);
-                if (!Directory.Exists(ruta))
-                {
-                    Console.WriteLine($"⚠️ Advertencia: Falta carpeta obligatoria: {carpeta}");
-                }
+                result.AddRange((Directory.EnumerateDirectories(dir, "*", SearchOption.AllDirectories)).ToList());
             }
+            return result;
         }
 
         private async Task ProcessDirectory(string targetDirectory)
@@ -64,7 +64,7 @@ namespace CertUAE.Services
             Console.WriteLine($"\n--- Escaneando directorio y subdirectorios: {targetDirectory} ---\n");
 
             // Recorre el directorio raíz y todos los subdirectorios
-            foreach (var dir in Directory.GetDirectories(targetDirectory, "*", SearchOption.AllDirectories).Prepend(targetDirectory))
+            foreach (var dir in this.directories)
             {
                 Console.WriteLine($"\n-- Carpeta: {dir} --");
 
@@ -182,7 +182,7 @@ namespace CertUAE.Services
             try
             {
                 //var anotaciones = await _databaseService.GetAllAnotacionesAsync();
-               // Console.WriteLine($"Se encontraron {anotaciones.Count} anotaciones en la base de datos.");
+                // Console.WriteLine($"Se encontraron {anotaciones.Count} anotaciones en la base de datos.");
                 // Puedes iterar sobre las anotaciones si quieres mostrar más detalles
                 // foreach (var anotacion in anotaciones.Take(5)) // Muestra las primeras 5
                 // {

@@ -14,10 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c63c1e58c76938c0faf29f1fb29ecb0f8ae41da1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+057e5722fac60a02bd6f1a8ef769e9d58da537ac")]
 [assembly: System.Reflection.AssemblyProductAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Resources.NeutralResourcesLanguageAttribute("es-CO")]
 
 // Generado por la clase WriteCodeFragment de MSBuild.
 
