@@ -33,6 +33,7 @@ namespace CertUAE.Services
         {
             Console.Write("Por favor, introduce la ruta del directorio a escanear: ");
             string targetDirectory = Console.ReadLine();
+           Console.WriteLine($"Escaneando directorio: {targetDirectory} - {DateTime.Now.ToString(format:"yyyy-MM-DD HH:mm")}");
 
             if (string.IsNullOrWhiteSpace(targetDirectory) || !Directory.Exists(targetDirectory))
             {
@@ -86,13 +87,6 @@ namespace CertUAE.Services
                     var pdfMetadata = _fileAnalysisUtils.GetPdfMetadata(pdfPath); // Obtener todos los metadatos del PDF
 
                     Console.WriteLine($"PDF: {fileData.Name} - Páginas: {pdfMetadata.PageCount}");
-                    Console.WriteLine($"  Autor: {pdfMetadata.Author ?? "N/A"}");
-                    Console.WriteLine($"  Título: {pdfMetadata.Title ?? "N/A"}");
-                    Console.WriteLine($"  Software Creador: {pdfMetadata.Creator ?? "N/A"}");
-                    Console.WriteLine($"  Software Productor: {pdfMetadata.Producer ?? "N/A"}");
-                    Console.WriteLine($"  Fecha Creación: {pdfMetadata.CreationDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A"}");
-                    Console.WriteLine($"  Fecha Modificación: {pdfMetadata.ModDate?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A"}");
-
 
                     int diff = pdfMetadata.PageCount - tiffs.Count; // Usa el conteo de páginas de los metadatos
 

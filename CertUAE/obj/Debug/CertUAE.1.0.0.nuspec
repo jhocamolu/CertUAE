@@ -5,7 +5,7 @@
     <version>1.0.0</version>
     <authors>CertUAE</authors>
     <description>Package Description</description>
-    <repository type="git" commit="057e5722fac60a02bd6f1a8ef769e9d58da537ac" />
+    <repository type="git" commit="47a00c9fe677305e43c3a622ea4b7412e34ea892" />
     <dependencies>
       <group targetFramework="net8.0">
         <dependency id="CsvHelper" version="33.1.0" exclude="Build,Analyzers" />
