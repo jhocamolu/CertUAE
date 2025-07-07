@@ -106,8 +106,8 @@ namespace CertUAE.Services
                         Nombre = fileData.Name,
                         Ruta = fileData.Path,
                         TamanoKB = fileData.SizeBytes / 1024,
-                        TamanoMB = fileData.SizeBytes / (1024.0 * 1024.0),
-                        TamanoGB = fileData.SizeBytes / (1024.0 * 1024.0 * 1024.0),
+                        TamanoMB = (fileData.SizeBytes / (1024 * 1024)),
+                        TamanoGB = (fileData.SizeBytes / (1024 * 1024 * 1024)),
                         Paginas = pdfMetadata.PageCount,
                         CantidadTiffs = tiffs.Count,
                         ContieneXml = xml.Any() ? "Sí" : "No", // Indica si hay XML/XMP
