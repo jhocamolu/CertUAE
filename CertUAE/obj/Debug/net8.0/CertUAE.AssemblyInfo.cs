@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47a00c9fe677305e43c3a622ea4b7412e34ea892")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d988c0bf319e2c455c66be46e5cef176a903ccd4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

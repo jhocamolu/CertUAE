@@ -33,7 +33,7 @@ namespace CertUAE.Services
         {
             Console.Write("Por favor, introduce la ruta del directorio a escanear: ");
             string targetDirectory = Console.ReadLine();
-           Console.WriteLine($"Escaneando directorio: {targetDirectory} - {DateTime.Now.ToString(format:"yyyy-MM-DD HH:mm")}");
+            Console.WriteLine($"Escaneando directorio: {targetDirectory} - {DateTime.Now.ToString(format: "yyyy-MM-DD HH:mm")}");
 
             if (string.IsNullOrWhiteSpace(targetDirectory) || !Directory.Exists(targetDirectory))
             {
@@ -63,7 +63,8 @@ namespace CertUAE.Services
             List<TiffReportRow> tiffReport = new List<TiffReportRow>();
 
             Console.WriteLine($"\n--- Escaneando directorio y subdirectorios: {targetDirectory} ---\n");
-
+            long totalbytes = 0;
+            int totalXml = 0;
             // Recorre el directorio raíz y todos los subdirectorios
             foreach (var dir in this.directories)
             {
@@ -74,13 +75,15 @@ namespace CertUAE.Services
                 var tiffs = files.Where(f => f.EndsWith(".tif", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".tiff", StringComparison.OrdinalIgnoreCase)).ToList();
                 var sqls = files.Where(f => f.EndsWith(".sql", StringComparison.OrdinalIgnoreCase)).ToList();
                 var excels = files.Where(f => f.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase)).ToList();
-
+                var xml = files.Where(f => f.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".xmp", StringComparison.OrdinalIgnoreCase)).ToList();
+                totalbytes += files.Sum(f => new FileInfo(f).Length);
+                totalXml += xml.Count;
                 if (!pdfs.Any() && !tiffs.Any() && !sqls.Any() && !excels.Any())
                 {
                     Console.WriteLine("⚠️ No se encontraron archivos válidos en esta carpeta.");
                     continue;
                 }
-
+                
                 foreach (var pdfPath in pdfs)
                 {
                     var fileData = _fileAnalysisUtils.GetFileInfo(pdfPath);
@@ -105,8 +108,11 @@ namespace CertUAE.Services
                         PdfSubject = pdfMetadata.Subject,
                         PdfCreator = pdfMetadata.Creator,
                         PdfProducer = pdfMetadata.Producer,
+                        PdfHashType = fileData.HashType,
+                        PdfHash = fileData.Hash,
                         PdfCreationDate = pdfMetadata.CreationDate,
-                        PdfModificationDate = pdfMetadata.ModDate
+                        PdfModificationDate = pdfMetadata.ModDate,
+                        PdfDescription = pdfMetadata.Keywords
                     });
 
                     if (pdfMetadata.PageCount == tiffs.Count)
@@ -142,12 +148,12 @@ namespace CertUAE.Services
             }
 
             // Guardar los informes en CSV
-            string basePath = Path.Combine(targetDirectory, "export_resultados");
+            string basePath = Path.Combine(targetDirectory, "Cert-SNR");
             Directory.CreateDirectory(basePath);
 
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                Delimiter = ",",
+                Delimiter = ";",
                 Encoding = Encoding.UTF8,
                 ShouldQuote = _ => true
             };
@@ -162,6 +168,37 @@ namespace CertUAE.Services
             }
 
             using (var writer = new StreamWriter(Path.Combine(basePath, "tiff_report.csv")))
+            using (var csv = new CsvWriter(writer, config))
+            {
+                csv.WriteHeader<TiffReportRow>();
+                csv.NextRecord();
+                csv.WriteRecords(tiffReport);
+            }
+
+            List<GeneralReport> generalReport = new List<GeneralReport> {
+                 new GeneralReport()
+                {
+                    Item = "Total de PDFs",
+                    Total = pdfReport.Count.ToString()
+                },
+                new GeneralReport()
+                {
+                    Item = "Total de TIFFs",
+                    Total = tiffReport.Count.ToString()
+                },
+                new GeneralReport()
+                {
+                    Item = "Total de XML/XMP",
+                    Total = totalXml.ToString()
+                },
+                new GeneralReport()
+                {
+                    Item = "Total de BYTES",
+                    Total = totalbytes.ToString()
+                },
+            }
+            ;
+            using (var writer = new StreamWriter(Path.Combine(basePath, "Cert.csv")))
             using (var csv = new CsvWriter(writer, config))
             {
                 csv.WriteHeader<TiffReportRow>();
