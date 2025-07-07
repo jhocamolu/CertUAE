@@ -17,6 +17,8 @@ namespace CertUAE.Models
         public int CantidadTiffs { get; set; }
         public int DiferenciaTiffsVsPaginas { get; set; }
 
+        public string ContieneXml { get; set; } // Nuevo campo para indicar si contiene XML
+
         // Nuevos campos para los metadatos del PDF
         public string PdfAuthor { get; set; }
         public string PdfTitle { get; set; }

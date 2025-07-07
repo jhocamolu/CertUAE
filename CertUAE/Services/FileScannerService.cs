@@ -33,7 +33,7 @@ namespace CertUAE.Services
         {
             Console.Write("Por favor, introduce la ruta del directorio a escanear: ");
             string targetDirectory = Console.ReadLine();
-            Console.WriteLine($"Escaneando directorio: {targetDirectory} - {DateTime.Now.ToString(format: "yyyy-MM-DD HH:mm")}");
+            Console.WriteLine($"Escaneando directorio: {targetDirectory} - {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
 
             if (string.IsNullOrWhiteSpace(targetDirectory) || !Directory.Exists(targetDirectory))
             {
@@ -41,8 +41,14 @@ namespace CertUAE.Services
                 return;
             }
             List<string> dirs = new List<string>(Directory.EnumerateDirectories(targetDirectory));
-            dirs.Remove(dirs.First(x => x.ToLower().Contains("System Volume Information".ToLower())));
-            dirs.Remove(dirs.First(x => x.ToLower().Contains("$Recycle.Bin".ToLower())));
+            if (dirs.Exists(x => x.ToLower().Contains("System Volume Information".ToLower())))
+            {
+                dirs.Remove(dirs.First(x => x.ToLower().Contains("System Volume Information".ToLower())));
+            }
+            if (dirs.Exists(x => x.ToLower().Contains("$Recycle.Bin".ToLower())))
+            {
+                dirs.Remove(dirs.First(x => x.ToLower().Contains("$Recycle.Bin".ToLower())));
+            }
             this.directories = Directories(dirs);
             ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
         }
@@ -50,6 +56,7 @@ namespace CertUAE.Services
         public List<string> Directories(List<string> dirs)
         {
             List<string> result = new List<string>();
+            result.AddRange(dirs);
             foreach (string dir in dirs)
             {
                 result.AddRange((Directory.EnumerateDirectories(dir, "*", SearchOption.AllDirectories)).ToList());
@@ -65,6 +72,7 @@ namespace CertUAE.Services
             Console.WriteLine($"\n--- Escaneando directorio y subdirectorios: {targetDirectory} ---\n");
             long totalbytes = 0;
             int totalXml = 0;
+            DateTime begin = DateTime.Now;
             // Recorre el directorio raíz y todos los subdirectorios
             foreach (var dir in this.directories)
             {
@@ -83,7 +91,7 @@ namespace CertUAE.Services
                     Console.WriteLine("⚠️ No se encontraron archivos válidos en esta carpeta.");
                     continue;
                 }
-                
+
                 foreach (var pdfPath in pdfs)
                 {
                     var fileData = _fileAnalysisUtils.GetFileInfo(pdfPath);
@@ -102,6 +110,7 @@ namespace CertUAE.Services
                         TamanoGB = fileData.SizeBytes / (1024.0 * 1024.0 * 1024.0),
                         Paginas = pdfMetadata.PageCount,
                         CantidadTiffs = tiffs.Count,
+                        ContieneXml = xml.Any() ? "Sí" : "No", // Indica si hay XML/XMP
                         DiferenciaTiffsVsPaginas = diff,
                         PdfAuthor = pdfMetadata.Author,
                         PdfTitle = pdfMetadata.Title,
@@ -196,14 +205,24 @@ namespace CertUAE.Services
                     Item = "Total de BYTES",
                     Total = totalbytes.ToString()
                 },
+                new GeneralReport()
+                {
+                    Item = "Fecha Inicio",
+                    Total = begin.ToString(format:"yyyy-MM-dd HH:m")
+                },
+                new GeneralReport()
+                {
+                    Item = "Fecha Termina",
+                    Total = DateTime.Now.ToString(format:"yyyy-MM-dd HH:m")
+                },
             }
             ;
             using (var writer = new StreamWriter(Path.Combine(basePath, "Cert.csv")))
             using (var csv = new CsvWriter(writer, config))
             {
-                csv.WriteHeader<TiffReportRow>();
+                csv.WriteHeader<GeneralReport>();
                 csv.NextRecord();
-                csv.WriteRecords(tiffReport);
+                csv.WriteRecords(generalReport);
             }
 
             Console.WriteLine($"\n✅ Exportación de informes CSV completada en: {basePath}");
