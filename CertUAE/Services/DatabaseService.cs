@@ -34,7 +34,7 @@ namespace CertUAE.Services
             Console.WriteLine("\n--- Simulando Guardado de Reporte TIFF en BD ---");
             foreach (var row in report)
             {
-                Console.WriteLine($"Guardando TIFF: {row.Nombre}, Alto: {row.Alto}, Ancho: {row.Ancho}");
+                //Console.WriteLine($"Guardando TIFF: {row.Nombre}, Alto: {row.Alto}, Ancho: {row.Ancho}");
                 // Aquí iría la lógica real para mapear TiffReportRow a tus modelos de BD
                 // Por ejemplo, si tienes una tabla 'ReporteTIFFs'
                 // await _dbContext.ReporteTIFFs.AddAsync(new ReporteTIFF { /* mapeo de propiedades */ });

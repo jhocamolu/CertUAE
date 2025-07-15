@@ -19,13 +19,14 @@ namespace CertUAE.Services
 {
     public class FileScannerService : IFileScannerService
     {
-        private readonly IDatabaseService _databaseService;
+        //private readonly IDatabaseService _databaseService;
         private readonly IFileAnalysisUtils _fileAnalysisUtils;
         private List<string> directories { get; set; }
 
-        public FileScannerService(IDatabaseService databaseService, IFileAnalysisUtils fileAnalysisUtils)
+        public FileScannerService(//IDatabaseService databaseService, 
+            IFileAnalysisUtils fileAnalysisUtils)
         {
-            _databaseService = databaseService;
+            //_databaseService = databaseService;
             _fileAnalysisUtils = fileAnalysisUtils;
         }
 
@@ -40,29 +41,48 @@ namespace CertUAE.Services
                 Console.WriteLine($"Error: La ruta '{targetDirectory}' no es un directorio válido o está vacía.");
                 return;
             }
-            List<string> dirs = new List<string>(Directory.EnumerateDirectories(targetDirectory));
-            if (dirs.Exists(x => x.ToLower().Contains("System Volume Information".ToLower())))
+            var options = new EnumerationOptions
             {
-                dirs.Remove(dirs.First(x => x.ToLower().Contains("System Volume Information".ToLower())));
-            }
-            if (dirs.Exists(x => x.ToLower().Contains("$Recycle.Bin".ToLower())))
+                RecurseSubdirectories = true,
+                MatchCasing = MatchCasing.CaseInsensitive,
+                IgnoreInaccessible = true // Ignora directorios a los que no se puede acceder
+            };
+            List<string> rootFiles = new List<string>(Directory.EnumerateDirectories(targetDirectory,"*",options));
+            List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
+            // Guardar los informes en CSV
+            string basePath = Path.Combine(targetDirectory, "Cert-SNR");
+            Directory.CreateDirectory(basePath);
+
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                dirs.Remove(dirs.First(x => x.ToLower().Contains("$Recycle.Bin".ToLower())));
+                Delimiter = ";",
+                Encoding = Encoding.UTF8,
+                ShouldQuote = args => true // CsvHelper 30.0.0+ usa args => true
+                                           // Versiones anteriores podrían usar _ => true
+            };
+
+            using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
+            using (var csv = new CsvWriter(writer, config))
+            {
+                // Escribir un encabezado si lo deseas (por ejemplo, "NombreArchivo")
+                csv.WriteField("NombreArchivo");
+                csv.NextRecord();
+
+                // Escribir cada archivo como un registro individual
+                foreach (var file in files)
+                {
+                    csv.WriteField(file); // Puedes escribir la ruta completa o solo el nombre del archivo
+                    csv.NextRecord();
+                }
             }
-            this.directories = Directories(dirs);
+
+
+            this.directories = rootFiles;
             ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
         }
 
-        public List<string> Directories(List<string> dirs)
-        {
-            List<string> result = new List<string>();
-            result.AddRange(dirs);
-            foreach (string dir in dirs)
-            {
-                result.AddRange((Directory.EnumerateDirectories(dir, "*", SearchOption.AllDirectories)).ToList());
-            }
-            return result;
-        }
+  
 
         private async Task ProcessDirectory(string targetDirectory)
         {
@@ -96,7 +116,6 @@ namespace CertUAE.Services
                 {
                     var fileData = _fileAnalysisUtils.GetFileInfo(pdfPath);
                     var pdfMetadata = _fileAnalysisUtils.GetPdfMetadata(pdfPath); // Obtener todos los metadatos del PDF
-
                     Console.WriteLine($"PDF: {fileData.Name} - Páginas: {pdfMetadata.PageCount}");
 
                     int diff = pdfMetadata.PageCount - tiffs.Count; // Usa el conteo de páginas de los metadatos
@@ -105,12 +124,10 @@ namespace CertUAE.Services
                     {
                         Nombre = fileData.Name,
                         Ruta = fileData.Path,
-                        TamanoKB = fileData.SizeBytes / 1024,
-                        TamanoMB = (fileData.SizeBytes / (1024 * 1024)),
-                        TamanoGB = (fileData.SizeBytes / (1024 * 1024 * 1024)),
+                        TamanoBytes = fileData.SizeBytes,
                         Paginas = pdfMetadata.PageCount,
                         CantidadTiffs = tiffs.Count,
-                        ContieneXml = xml.Any() ? "Sí" : "No", // Indica si hay XML/XMP
+                        ContieneXml = xml.Any() ? "Si" : "No", // Indica si hay XML/XMP
                         DiferenciaTiffsVsPaginas = diff,
                         PdfAuthor = pdfMetadata.Author,
                         PdfTitle = pdfMetadata.Title,
@@ -119,8 +136,8 @@ namespace CertUAE.Services
                         PdfProducer = pdfMetadata.Producer,
                         PdfHashType = fileData.HashType,
                         PdfHash = fileData.Hash,
-                        PdfCreationDate = pdfMetadata.CreationDate,
-                        PdfModificationDate = pdfMetadata.ModDate,
+                        PdfCreationDate = fileData.CreatedAt,
+                        PdfModificationDate = fileData.ModifiedAt,
                         PdfDescription = pdfMetadata.Keywords
                     });
 
@@ -135,19 +152,14 @@ namespace CertUAE.Services
                     var fileData = _fileAnalysisUtils.GetFileInfo(tiffPath);
                     try
                     {
-                        using (Image<Rgba32> image = Image.Load<Rgba32>(tiffPath))
+
+                        tiffReport.Add(new TiffReportRow
                         {
-                            tiffReport.Add(new TiffReportRow
-                            {
-                                Nombre = fileData.Name,
-                                Ruta = fileData.Path,
-                                TamanoKB = fileData.SizeBytes / 1024,
-                                TamanoMB = fileData.SizeBytes / (1024.0 * 1024.0),
-                                TamanoGB = fileData.SizeBytes / (1024.0 * 1024.0 * 1024.0),
-                                Alto = image.Height,
-                                Ancho = image.Width
-                            });
-                        }
+                            Nombre = fileData.Name,
+                            Ruta = fileData.Path,
+                            TamanoBytes = fileData.SizeBytes,
+                        });
+
                     }
                     catch (Exception ex)
                     {
@@ -163,7 +175,7 @@ namespace CertUAE.Services
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
-                Encoding = Encoding.UTF8,
+                Encoding = Encoding.Latin1,
                 ShouldQuote = _ => true
             };
 

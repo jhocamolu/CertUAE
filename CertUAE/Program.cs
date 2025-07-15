@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using CertUAE.Models; // Asegúrate de que tus modelos estén en este namespace
+using CertUAE.Models;
 using CertUAE.Services;
 using CertUAE.Utilities;
-using Microsoft.Extensions.Configuration; // Necesario para IConfiguration
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 

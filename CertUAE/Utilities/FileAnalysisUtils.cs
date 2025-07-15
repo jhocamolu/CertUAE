@@ -19,6 +19,8 @@ namespace CertUAE.Utilities
             long fileSize = new FileInfo(filePath).Length;
             string fileExtension = Path.GetExtension(filePath).ToLowerInvariant();
 
+            var fileInfo = new FileInfo(filePath);
+
             string hash = "N/A";
             string hashType = "SHA256";
 
@@ -43,6 +45,8 @@ namespace CertUAE.Utilities
                 Path = filePath,
                 SizeBytes = fileSize,
                 Extension = fileExtension,
+                CreatedAt = fileInfo.CreationTime,
+                ModifiedAt = fileInfo.LastWriteTime,
                 Hash = hash,
                 HashType = hashType
             };

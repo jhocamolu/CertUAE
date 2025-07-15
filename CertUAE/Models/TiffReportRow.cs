@@ -10,10 +10,6 @@ namespace CertUAE.Models
     {
         public string Nombre { get; set; }
         public string Ruta { get; set; }
-        public long TamanoKB { get; set; }
-        public double TamanoMB { get; set; }
-        public double TamanoGB { get; set; }
-        public int Alto { get; set; }
-        public int Ancho { get; set; }
+        public long TamanoBytes { get; set; }
     }
 }

@@ -10,9 +10,7 @@ namespace CertUAE.Models
     {
         public string Nombre { get; set; }
         public string Ruta { get; set; }
-        public double TamanoKB { get; set; }
-        public double TamanoMB { get; set; }
-        public double TamanoGB { get; set; }
+        public long TamanoBytes { get; set; }
         public int Paginas { get; set; } // Mantenemos para compatibilidad con el CSV actual
         public int CantidadTiffs { get; set; }
         public int DiferenciaTiffsVsPaginas { get; set; }
