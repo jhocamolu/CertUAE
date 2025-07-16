@@ -47,7 +47,7 @@ namespace CertUAE.Services
                 MatchCasing = MatchCasing.CaseInsensitive,
                 IgnoreInaccessible = true // Ignora directorios a los que no se puede acceder
             };
-            List<string> rootFiles = new List<string>(Directory.EnumerateDirectories(targetDirectory,"*",options));
+            List<string> rootFiles = new List<string>(Directory.EnumerateDirectories(targetDirectory, "*", options));
             List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
             // Guardar los informes en CSV
             string basePath = Path.Combine(targetDirectory, "Cert-SNR");
@@ -76,13 +76,74 @@ namespace CertUAE.Services
                     csv.NextRecord();
                 }
             }
-
-
-            this.directories = rootFiles;
-            ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+            Console.WriteLine("\n--- Selecciona una opción ---");
+            Console.WriteLine("1. Generar solo listado de archivos");
+            Console.WriteLine("2. Generar solo procesamiento.");
+            Console.WriteLine("3. Generar Certificacion todos los archivos");
+            Console.Write("Tu opción: ");
+            string generarRutero = Console.ReadLine();
+            switch (generarRutero)
+            {
+                case "1":
+                    Rutero(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    break;
+                case "2":
+                    this.directories = rootFiles;
+                    ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    break;
+                case "3":
+                    Rutero(targetDirectory).Wait();
+                    this.directories = rootFiles;
+                    ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    break;
+                default:
+                    Console.WriteLine("Opción no válida. No se generará el rutero.");
+                    break;
+            }
+            //this.directories = rootFiles;
+            //ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
         }
 
-  
+        private async Task Rutero(string targetDirectory)
+        {
+            var options = new EnumerationOptions
+            {
+                RecurseSubdirectories = true,
+                MatchCasing = MatchCasing.CaseInsensitive,
+                IgnoreInaccessible = true // Ignora directorios a los que no se puede acceder
+            };
+
+            List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
+            // Guardar los informes en CSV
+            string basePath = Path.Combine(targetDirectory, "Cert-SNR");
+            Directory.CreateDirectory(basePath);
+
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ";",
+                Encoding = Encoding.UTF8,
+                ShouldQuote = args => true // CsvHelper 30.0.0+ usa args => true
+                                           // Versiones anteriores podrían usar _ => true
+            };
+
+            using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
+            using (var csv = new CsvWriter(writer, config))
+            {
+                // Escribir un encabezado si lo deseas (por ejemplo, "NombreArchivo")
+                csv.WriteField("NombreArchivo");
+                csv.NextRecord();
+
+                // Escribir cada archivo como un registro individual
+                foreach (var file in files)
+                {
+                    csv.WriteField(file); // Puedes escribir la ruta completa o solo el nombre del archivo
+                    csv.NextRecord();
+                }
+            }
+            Console.WriteLine($"Listado de archivos guardado en: {Path.Combine(basePath, "ListadoArchivos.csv")}");
+        }
+
 
         private async Task ProcessDirectory(string targetDirectory)
         {

@@ -4,6 +4,8 @@ using CsvHelper;
 using CsvHelper.Configuration;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure; // Required for GetService<IDesignTimeModel>()
+using Microsoft.EntityFrameworkCore.Metadata; // Required for IReadOnlyModel, IReadOnlyProperty
 
 using System;
 using System.Collections.Generic;
@@ -17,10 +19,13 @@ namespace CertUAE.Services
     public class DataDictionaryService : IDataDictionaryService
     {
         private readonly CertDbContext _dbContext;
+        private readonly IReadOnlyModel _designTimeModel; // New field for design-time model
 
         public DataDictionaryService(CertDbContext dbContext)
         {
             _dbContext = dbContext;
+            // Get the design-time model via GetService<IDesignTimeModel>()
+            _designTimeModel = _dbContext.GetService<IDesignTimeModel>().Model;
         }
 
         public async Task GenerateDataDictionaryCsv(string outputPath)
@@ -31,12 +36,13 @@ namespace CertUAE.Services
 
             try
             {
-                // Iterar sobre todos los tipos de entidad (tablas) en el modelo de EF Core
-                foreach (var entityType in _dbContext.Model.GetEntityTypes())
+                // Iterate over all entity types (tables) in the design-time model
+                // Use _designTimeModel instead of _dbContext.Model
+                foreach (var entityType in _designTimeModel.GetEntityTypes())
                 {
                     // Obtener el nombre de la tabla mapeada
                     string tableName = entityType.GetTableName();
-                    if (string.IsNullOrEmpty(tableName)) // Si no hay nombre de tabla (ej: vista sin mapeo directo), saltar
+                    if (string.IsNullOrEmpty(tableName))
                     {
                         continue;
                     }
@@ -47,21 +53,16 @@ namespace CertUAE.Services
                         var columnInfo = new ColumnSchemaInfo
                         {
                             TableName = tableName,
-                            ColumnName = property.GetColumnName(), // Nombre de la columna en la BD
-                            NetDataType = property.ClrType.Name, // Tipo de dato C#
+                            ColumnName = property.GetColumnName(),
+                            NetDataType = property.ClrType.Name,
                             IsNullable = property.IsNullable,
                             IsPrimaryKey = property.IsPrimaryKey(),
-                            MaxLength = property.GetMaxLength(), // Longitud máxima para strings
-                            Description = "" // Deja un campo vacío para descripciones manuales
+                            MaxLength = property.GetMaxLength(),
+                            // Correctly get the comment from the design-time property
+                            Description = property.GetComment()
                         };
 
-                        // Intentar obtener el tipo de dato SQL (puede ser más complejo y requerir un proveedor específico)
-                        // Para Pomelo.EntityFrameworkCore.MySql, puedes intentar obtener el tipo de columna.
-                        // property.GetColumnType() a veces devuelve el tipo SQL, pero no siempre es preciso o incluye la longitud.
-                        // Para una mayor precisión del tipo SQL, podrías necesitar inspeccionar la base de datos directamente
-                        // o confiar en la inferencia de EF Core.
                         columnInfo.SqlDataType = property.GetColumnType() ?? property.ClrType.Name;
-
 
                         // Verificar si es una clave foránea
                         var foreignKey = entityType.FindForeignKeys(property).FirstOrDefault();
@@ -85,19 +86,33 @@ namespace CertUAE.Services
                 // Configuración para CsvHelper
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Delimiter = ",",
+                    Delimiter = ";",
                     Encoding = System.Text.Encoding.UTF8,
-                    ShouldQuote = args => true // Asegura que todos los campos se citen, útil para descripciones
+                    ShouldQuote = args => true
                 };
 
-                // Escribir la información en un archivo CSV
+                // IMPORTANT: If you are still using CsvHelper v1.0.0.0 and facing issues
+                // with DefaultClassMap, consider the previous recommendation to create
+                // an explicit ColumnSchemaInfoMap and register it here:
+                // config.RegisterClassMap<ColumnSchemaInfoMap>();
+
                 string filePath = Path.Combine(outputPath, "data_dictionary.csv");
                 using (var writer = new StreamWriter(filePath))
                 using (var csv = new CsvWriter(writer, config))
                 {
-                    csv.WriteHeader<ColumnSchemaInfo>();
-                    await csv.NextRecordAsync();
+                    // If you registered a map, simply call WriteRecords
+                    // If not, and you're relying on auto-mapping (and it works with a newer CsvHelper version),
+                    // you might need to call WriteHeader<ColumnSchemaInfo>() if you want custom headers
+                    // before WriteRecords. But often, WriteRecords is sufficient with auto-mapping.
+
+                    // For auto-mapping with default headers:
+                    csv.WriteHeader<ColumnSchemaInfo>(); // Explicitly write headers if not using a map
+                    await csv.NextRecordAsync(); // Move to the next line after headers
                     await csv.WriteRecordsAsync(columnSchemaInfos);
+
+
+                    // If you used the explicit map as suggested in the previous response:
+                    // csv.WriteRecords(columnSchemaInfos); // This will write headers and records based on the map
                 }
 
                 Console.WriteLine($"✅ Diccionario de datos generado exitosamente en: {filePath}");
