@@ -75,7 +75,7 @@ namespace CertUAE.Utilities
             {
                 using (var document = PdfDocument.Open(filePath))
                 {
-                    metadata.PageCount = document.NumberOfPages; // También obtenemos el conteo de páginas aquí
+                    metadata.PageCount = document.NumberOfPages;
 
                     var info = document.Information;
                     metadata.Author = info.Author;
@@ -85,8 +85,6 @@ namespace CertUAE.Utilities
                     metadata.Creator = info.Creator;
                     metadata.Producer = info.Producer;
 
-                    // UglyToad.PdfPig devuelve fechas como cadenas o nulas.
-                    // Intentamos parsearlas a DateTime
                     if (DateTime.TryParse(info.CreationDate, out DateTime creationDate))
                     {
                         metadata.CreationDate = creationDate;
@@ -100,7 +98,7 @@ namespace CertUAE.Utilities
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al obtener metadatos de PDF {filePath}: {ex.Message}");
-                // Deja los campos con valores por defecto o null en caso de error
+                metadata = null;
             }
             return metadata;
         }

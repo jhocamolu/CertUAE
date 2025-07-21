@@ -48,41 +48,46 @@ namespace CertUAE
                 })
                 .Build();
 
-            // Lógica de selección de funcionalidad
-            Console.WriteLine("\n--- Selecciona una opción ---");
-            Console.WriteLine("1. Escanear archivos y generar reportes.");
-            Console.WriteLine("2. Generar diccionario de datos de la base de datos.");
-            Console.Write("Tu opción: ");
-
-            string option = Console.ReadLine();
-
-            using (var scope = host.Services.CreateScope())
+            do
             {
-                switch (option)
+
+                using (var scope = host.Services.CreateScope())
                 {
-                    case "1":
-                        var fileScannerService = scope.ServiceProvider.GetRequiredService<IFileScannerService>();
-                        fileScannerService.RunScanner();
-                        break;
-                    case "2":
-                        var dataDictionaryService = scope.ServiceProvider.GetRequiredService<IDataDictionaryService>();
-                        Console.Write("Introduce la ruta para guardar el diccionario de datos (ej: C:\\temp\\reports): ");
-                        string outputPath = Console.ReadLine();
-                        if (!Directory.Exists(outputPath))
-                        {
-                            Console.WriteLine($"Creando directorio de salida: {outputPath}");
-                            Directory.CreateDirectory(outputPath);
-                        }
-                        await dataDictionaryService.GenerateDataDictionaryCsv(outputPath); // Llamada asíncrona
-                        break;
-                    default:
-                        Console.WriteLine("Opción inválida. Saliendo.");
-                        break;
+                    // Lógica de selección de funcionalidad
+                    Console.WriteLine("\n--- Selecciona una opción ---");
+                    Console.WriteLine("1. Escanear archivos y generar reportes.");
+                    Console.WriteLine("2. Generar diccionario de datos de la base de datos.");
+                    Console.Write("Tu opción: ");
+                    string option = Console.ReadLine();
+                    switch (option)
+                    {
+                        case "1":
+                            var fileScannerService = scope.ServiceProvider.GetRequiredService<IFileScannerService>();
+                            fileScannerService.RunScanner();
+                            break;
+                        case "2":
+                            var dataDictionaryService = scope.ServiceProvider.GetRequiredService<IDataDictionaryService>();
+                            Console.Write("Introduce la ruta para guardar el diccionario de datos (ej: C:\\temp\\reports): ");
+                            string outputPath = Console.ReadLine();
+                            if (!Directory.Exists(outputPath))
+                            {
+                                Console.WriteLine($"Creando directorio de salida: {outputPath}");
+                                Directory.CreateDirectory(outputPath);
+                            }
+                            await dataDictionaryService.GenerateDataDictionaryCsv(outputPath); // Llamada asíncrona
+                            break;
+                        default:
+                            Console.WriteLine("Opción inválida. Saliendo.");
+                            break;
+                    }
                 }
-            }
-            Console.WriteLine($"Escaneo directorio finalizo: {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
+                Console.WriteLine($"Escaneo directorio finalizo: {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
+                Console.WriteLine("0. Regresar Menu.");
+                Console.WriteLine("9. Finalizar.");
+            } while ("0" == Console.ReadLine());
             Console.WriteLine("\n--- Proceso finalizado. Presiona cualquier tecla para salir ---");
             Console.ReadKey();
         }
     }
 }
+

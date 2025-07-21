@@ -45,11 +45,10 @@ namespace CertUAE.Services
             {
                 RecurseSubdirectories = true,
                 MatchCasing = MatchCasing.CaseInsensitive,
-                IgnoreInaccessible = true // Ignora directorios a los que no se puede acceder
+                IgnoreInaccessible = true
             };
             List<string> rootFiles = new List<string>(Directory.EnumerateDirectories(targetDirectory, "*", options));
             List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
-            // Guardar los informes en CSV
             string basePath = Path.Combine(targetDirectory, "Cert-SNR");
             Directory.CreateDirectory(basePath);
 
@@ -58,21 +57,17 @@ namespace CertUAE.Services
             {
                 Delimiter = ";",
                 Encoding = Encoding.UTF8,
-                ShouldQuote = args => true // CsvHelper 30.0.0+ usa args => true
-                                           // Versiones anteriores podrían usar _ => true
+                ShouldQuote = args => true
             };
 
             using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
             using (var csv = new CsvWriter(writer, config))
             {
-                // Escribir un encabezado si lo deseas (por ejemplo, "NombreArchivo")
                 csv.WriteField("NombreArchivo");
                 csv.NextRecord();
-
-                // Escribir cada archivo como un registro individual
                 foreach (var file in files)
                 {
-                    csv.WriteField(file); // Puedes escribir la ruta completa o solo el nombre del archivo
+                    csv.WriteField(file);
                     csv.NextRecord();
                 }
             }
@@ -85,23 +80,21 @@ namespace CertUAE.Services
             switch (generarRutero)
             {
                 case "1":
-                    Rutero(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    Rutero(targetDirectory).Wait();
                     break;
                 case "2":
                     this.directories = rootFiles;
-                    ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    ProcessDirectory(targetDirectory).Wait();
                     break;
                 case "3":
                     Rutero(targetDirectory).Wait();
                     this.directories = rootFiles;
-                    ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
+                    ProcessDirectory(targetDirectory).Wait();
                     break;
                 default:
                     Console.WriteLine("Opción no válida. No se generará el rutero.");
                     break;
             }
-            //this.directories = rootFiles;
-            //ProcessDirectory(targetDirectory).Wait(); // Espera a que el método asíncrono termine
         }
 
         private async Task Rutero(string targetDirectory)
@@ -110,11 +103,10 @@ namespace CertUAE.Services
             {
                 RecurseSubdirectories = true,
                 MatchCasing = MatchCasing.CaseInsensitive,
-                IgnoreInaccessible = true // Ignora directorios a los que no se puede acceder
+                IgnoreInaccessible = true
             };
 
             List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
-            // Guardar los informes en CSV
             string basePath = Path.Combine(targetDirectory, "Cert-SNR");
             Directory.CreateDirectory(basePath);
 
@@ -123,21 +115,17 @@ namespace CertUAE.Services
             {
                 Delimiter = ";",
                 Encoding = Encoding.UTF8,
-                ShouldQuote = args => true // CsvHelper 30.0.0+ usa args => true
-                                           // Versiones anteriores podrían usar _ => true
+                ShouldQuote = args => true
             };
 
             using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
             using (var csv = new CsvWriter(writer, config))
             {
-                // Escribir un encabezado si lo deseas (por ejemplo, "NombreArchivo")
                 csv.WriteField("NombreArchivo");
                 csv.NextRecord();
-
-                // Escribir cada archivo como un registro individual
                 foreach (var file in files)
                 {
-                    csv.WriteField(file); // Puedes escribir la ruta completa o solo el nombre del archivo
+                    csv.WriteField(file);
                     csv.NextRecord();
                 }
             }
@@ -154,7 +142,7 @@ namespace CertUAE.Services
             long totalbytes = 0;
             int totalXml = 0;
             DateTime begin = DateTime.Now;
-            // Recorre el directorio raíz y todos los subdirectorios
+            
             foreach (var dir in this.directories)
             {
                 Console.WriteLine($"\n-- Carpeta: {dir} --");
@@ -186,20 +174,20 @@ namespace CertUAE.Services
                         Nombre = fileData.Name,
                         Ruta = fileData.Path,
                         TamanoBytes = fileData.SizeBytes,
-                        Paginas = pdfMetadata.PageCount,
+                        Paginas = ((pdfMetadata != null) ? pdfMetadata.PageCount : 0),
                         CantidadTiffs = tiffs.Count,
                         ContieneXml = xml.Any() ? "Si" : "No", // Indica si hay XML/XMP
                         DiferenciaTiffsVsPaginas = diff,
-                        PdfAuthor = pdfMetadata.Author,
-                        PdfTitle = pdfMetadata.Title,
-                        PdfSubject = pdfMetadata.Subject,
-                        PdfCreator = pdfMetadata.Creator,
-                        PdfProducer = pdfMetadata.Producer,
+                        PdfAuthor = pdfMetadata?.Author,
+                        PdfTitle = pdfMetadata?.Title,
+                        PdfSubject = pdfMetadata?.Subject,
+                        PdfCreator = pdfMetadata?.Creator,
+                        PdfProducer = pdfMetadata?.Producer,
                         PdfHashType = fileData.HashType,
                         PdfHash = fileData.Hash,
                         PdfCreationDate = fileData.CreatedAt,
                         PdfModificationDate = fileData.ModifiedAt,
-                        PdfDescription = pdfMetadata.Keywords
+                        PdfDescription = pdfMetadata?.Keywords
                     });
 
                     if (pdfMetadata.PageCount == tiffs.Count)
