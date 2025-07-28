@@ -165,9 +165,9 @@ namespace CertUAE.Services
                 {
                     var fileData = _fileAnalysisUtils.GetFileInfo(pdfPath);
                     var pdfMetadata = _fileAnalysisUtils.GetPdfMetadata(pdfPath); // Obtener todos los metadatos del PDF
-                    Console.WriteLine($"PDF: {fileData.Name} - Páginas: {pdfMetadata.PageCount}");
+                    Console.WriteLine($"PDF: {fileData.Name} - Páginas: {((pdfMetadata != null) ? pdfMetadata.PageCount : 0)}");
 
-                    int diff = pdfMetadata.PageCount - tiffs.Count; // Usa el conteo de páginas de los metadatos
+                    int diff = ((pdfMetadata != null) ? pdfMetadata.PageCount : 0) - tiffs.Count; // Usa el conteo de páginas de los metadatos
 
                     pdfReport.Add(new PdfReportRow
                     {
@@ -190,10 +190,10 @@ namespace CertUAE.Services
                         PdfDescription = pdfMetadata?.Keywords
                     });
 
-                    if (pdfMetadata.PageCount == tiffs.Count)
-                        Console.WriteLine($"✅ Coincidencia: {fileData.Name} tiene {pdfMetadata.PageCount} páginas y {tiffs.Count} TIFFs.");
+                    if (((pdfMetadata != null) ? pdfMetadata.PageCount : 0) == tiffs.Count)
+                        Console.WriteLine($"✅ Coincidencia: {fileData.Name} tiene {pdfMetadata?.PageCount} páginas y {tiffs.Count} TIFFs.");
                     else
-                        Console.WriteLine($"❌ Diferencia: {fileData.Name} tiene {pdfMetadata.PageCount} páginas y {tiffs.Count} TIFFs.");
+                        Console.WriteLine($"❌ Diferencia: {fileData.Name} tiene {pdfMetadata?.PageCount} páginas y {tiffs.Count} TIFFs.");
                 }
 
                 foreach (var tiffPath in tiffs)

@@ -8,7 +8,15 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <IncludeSymbols>False</IncludeSymbols>
     <NeutralLanguage>es-CO</NeutralLanguage>
+    <ApplicationIcon>harddrive-burning_97096.ico</ApplicationIcon>
+    <Title>CERT-UAE</Title>
+    <Copyright>Jhonatan Moreno</Copyright>
+    <PackageIcon>harddrive-burning_97096.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="harddrive-burning_97096.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
@@ -26,6 +34,13 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.9" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="harddrive-burning_97096.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

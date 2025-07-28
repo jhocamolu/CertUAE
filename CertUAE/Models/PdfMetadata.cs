@@ -17,6 +17,6 @@ namespace CertUAE.Models
         public string Producer { get; set; }
         public DateTime? CreationDate { get; set; }
         public DateTime? ModDate { get; set; }
-        public int PageCount { get; set; }
+        public int PageCount { get; set; } = 0;
     }
 }
