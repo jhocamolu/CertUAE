@@ -82,8 +82,10 @@ namespace CertUAE
                     }
                 }
                 Console.WriteLine($"Escaneo directorio finalizo: {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
+                Console.Clear();
                 Console.WriteLine("0. Regresar Menu.");
                 Console.WriteLine("9. Finalizar.");
+               
             } while ("0" == Console.ReadLine());
             Console.WriteLine("\n--- Proceso finalizado. Presiona cualquier tecla para salir ---");
             Console.ReadKey();

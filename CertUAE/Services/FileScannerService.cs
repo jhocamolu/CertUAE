@@ -276,6 +276,12 @@ namespace CertUAE.Services
                     Item = "Fecha Termina",
                     Total = DateTime.Now.ToString(format:"yyyy-MM-dd HH:m")
                 },
+                new GeneralReport()
+                {
+                    Item = "Tiempo total analizado",
+                    Total =  CalcularYDiferencia(begin, DateTime.Now)
+                },
+
             }
             ;
             using (var writer = new StreamWriter(Path.Combine(basePath, "Cert.csv")))
@@ -304,6 +310,23 @@ namespace CertUAE.Services
             {
                 Console.WriteLine($"Error al interactuar con la base de datos: {ex.Message}");
             }
+        }
+        public string CalcularYDiferencia(DateTime fechaInicio, DateTime fechaFin)
+        {
+            Console.WriteLine($"Calculando diferencia entre {fechaInicio:yyyy-MM-dd HH:mm} y {fechaFin:yyyy-MM-dd HH:mm}");
+
+            // Calcula la diferencia usando TimeSpan
+            TimeSpan diferencia = fechaFin - fechaInicio;
+
+            // Extrae los componentes de la diferencia
+            int dias = diferencia.Days;
+            int horas = diferencia.Hours;
+            int minutos = diferencia.Minutes;
+
+            // Formatea el resultado
+            string resultado = $"{dias} día{(dias == 1 ? "" : "s")} {horas} hora{(horas == 1 ? "" : "s")} {minutos} minuto{(minutos == 1 ? "" : "s")}";
+
+            return resultado;
         }
     }
 }
