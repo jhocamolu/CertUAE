@@ -14,6 +14,7 @@ namespace CertUAE.Models
         public string Extension { get; set; }
         public string Hash { get; set; }
         public string HashType { get; set; }
+        public int? HashCode { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
         public int? PdfPageCount { get; set; } // Solo para PDFs

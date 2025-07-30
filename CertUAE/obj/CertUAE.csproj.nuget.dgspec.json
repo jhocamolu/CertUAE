@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj": {}
+    "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj": {}
   },
   "projects": {
-    "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj": {
-      "version": "1.0.0",
+    "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj": {
+      "version": "0.0.2",
       "restore": {
-        "projectUniqueName": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
+        "projectUniqueName": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
         "projectName": "CertUAE",
-        "projectPath": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
-        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\obj\\",
+        "projectPath": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
+        "packagesPath": "C:\\Users\\jhonatan.moreno\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jhonatan.moreno\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -90,6 +90,10 @@
             "SixLabors.ImageSharp.Drawing": {
               "target": "Package",
               "version": "[2.1.6, )"
+            },
+            "System.Management": {
+              "target": "Package",
+              "version": "[9.0.7, )"
             }
           },
           "imports": [
@@ -108,7 +112,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

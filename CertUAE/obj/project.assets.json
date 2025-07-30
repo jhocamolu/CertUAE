@@ -1162,15 +1162,20 @@
           }
         }
       },
-      "System.CodeDom/4.4.0": {
+      "System.CodeDom/9.0.7": {
         "type": "package",
         "compile": {
-          "ref/netstandard2.0/_._": {
+          "lib/net8.0/System.CodeDom.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/System.CodeDom.dll": {}
+          "lib/net8.0/System.CodeDom.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
         }
       },
       "System.Collections.Immutable/6.0.0": {
@@ -1336,6 +1341,31 @@
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "System.Management/9.0.7": {
+        "type": "package",
+        "dependencies": {
+          "System.CodeDom": "9.0.7"
+        },
+        "compile": {
+          "lib/net8.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/System.Management.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
         }
       },
       "System.Reflection.Metadata/6.0.1": {
@@ -3245,25 +3275,32 @@
         "sixlabors.imagesharp.drawing.nuspec"
       ]
     },
-    "System.CodeDom/4.4.0": {
-      "sha512": "2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA==",
+    "System.CodeDom/9.0.7": {
+      "sha512": "skI5aEl6XbZelP1hZvSmzzm3mM98k22x19Zu1Lf4rmuYoFEMJr7s7Te/MWUk9twjz4utyXt3q3pYXxGxI/Y+zA==",
       "type": "package",
-      "path": "system.codedom/4.4.0",
+      "path": "system.codedom/9.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
-        "lib/net461/System.CodeDom.dll",
+        "buildTransitive/net461/System.CodeDom.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.CodeDom.targets",
+        "lib/net462/System.CodeDom.dll",
+        "lib/net462/System.CodeDom.xml",
+        "lib/net8.0/System.CodeDom.dll",
+        "lib/net8.0/System.CodeDom.xml",
+        "lib/net9.0/System.CodeDom.dll",
+        "lib/net9.0/System.CodeDom.xml",
         "lib/netstandard2.0/System.CodeDom.dll",
-        "ref/net461/System.CodeDom.dll",
-        "ref/net461/System.CodeDom.xml",
-        "ref/netstandard2.0/System.CodeDom.dll",
-        "ref/netstandard2.0/System.CodeDom.xml",
-        "system.codedom.4.4.0.nupkg.sha512",
+        "lib/netstandard2.0/System.CodeDom.xml",
+        "system.codedom.9.0.7.nupkg.sha512",
         "system.codedom.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
+        "useSharedDesignerContext.txt"
       ]
     },
     "System.Collections.Immutable/6.0.0": {
@@ -3485,6 +3522,35 @@
         "lib/netstandard2.0/System.IO.Pipelines.xml",
         "system.io.pipelines.9.0.6.nupkg.sha512",
         "system.io.pipelines.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Management/9.0.7": {
+      "sha512": "9wHNgKnZRFLZ/vSQ7+Ai9LrKkxEKh9LvC+Ta5dwQgPsyni0ET5igPATg01WW4bx/E5Q3VtRgEGithhOXaKIh0A==",
+      "type": "package",
+      "path": "system.management/9.0.7",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Management.targets",
+        "lib/net462/_._",
+        "lib/net8.0/System.Management.dll",
+        "lib/net8.0/System.Management.xml",
+        "lib/net9.0/System.Management.dll",
+        "lib/net9.0/System.Management.xml",
+        "lib/netstandard2.0/System.Management.dll",
+        "lib/netstandard2.0/System.Management.xml",
+        "runtimes/win/lib/net8.0/System.Management.dll",
+        "runtimes/win/lib/net8.0/System.Management.xml",
+        "runtimes/win/lib/net9.0/System.Management.dll",
+        "runtimes/win/lib/net9.0/System.Management.xml",
+        "system.management.9.0.7.nupkg.sha512",
+        "system.management.nuspec",
         "useSharedDesignerContext.txt"
       ]
     },
@@ -3716,27 +3782,28 @@
       "PdfPig >= 0.1.10",
       "Pomelo.EntityFrameworkCore.MySql >= 8.0.2",
       "SixLabors.ImageSharp >= 3.1.9",
-      "SixLabors.ImageSharp.Drawing >= 2.1.6"
+      "SixLabors.ImageSharp.Drawing >= 2.1.6",
+      "System.Management >= 9.0.7"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\DELL\\.nuget\\packages\\": {},
+    "C:\\Users\\jhonatan.moreno\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.0.2",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
+      "projectUniqueName": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
       "projectName": "CertUAE",
-      "projectPath": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
-      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DELL\\source\\repos\\CertUAE\\CertUAE\\obj\\",
+      "projectPath": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\CertUAE.csproj",
+      "packagesPath": "C:\\Users\\jhonatan.moreno\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jhonatan.moreno\\Documents\\repos\\CertUAE\\CertUAE\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jhonatan.moreno\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3809,6 +3876,10 @@
           "SixLabors.ImageSharp.Drawing": {
             "target": "Package",
             "version": "[2.1.6, )"
+          },
+          "System.Management": {
+            "target": "Package",
+            "version": "[9.0.7, )"
           }
         },
         "imports": [
@@ -3827,7 +3898,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Jhonatan Moreno")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c33690ec8ce6fb76fd41d1f4e0a6de915f069359")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae24d4de7da319b338071958a0447e9ff70b7576")]
 [assembly: System.Reflection.AssemblyProductAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Tiff;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+﻿using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
 using CertUAE.Models; // Para PdfReportRow, TiffReportRow, FileInfoData, PdfMetadata
 using CertUAE.Utilities; // Para FileAnalysisUtils
+using System;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Linq;
+using System.Management;
 
 namespace CertUAE.Services
 {
@@ -22,6 +17,8 @@ namespace CertUAE.Services
         //private readonly IDatabaseService _databaseService;
         private readonly IFileAnalysisUtils _fileAnalysisUtils;
         private List<string> directories { get; set; }
+
+        string basePath { get; set; }
 
         public FileScannerService(//IDatabaseService databaseService, 
             IFileAnalysisUtils fileAnalysisUtils)
@@ -41,7 +38,7 @@ namespace CertUAE.Services
                 Console.WriteLine($"Error: La ruta '{targetDirectory}' no es un directorio válido o está vacía.");
                 return;
             }
-            var options = new EnumerationOptions
+            var options = new System.IO.EnumerationOptions
             {
                 RecurseSubdirectories = true,
                 MatchCasing = MatchCasing.CaseInsensitive,
@@ -49,28 +46,10 @@ namespace CertUAE.Services
             };
             List<string> rootFiles = new List<string>(Directory.EnumerateDirectories(targetDirectory, "*", options));
             List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
-            string basePath = Path.Combine(targetDirectory, "Cert-SNR");
+            files.AddRange(rootFiles);
+            basePath = Path.Combine(targetDirectory, "Cert-SNR");
             Directory.CreateDirectory(basePath);
 
-
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = ";",
-                Encoding = Encoding.UTF8,
-                ShouldQuote = args => true
-            };
-
-            using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
-            using (var csv = new CsvWriter(writer, config))
-            {
-                csv.WriteField("NombreArchivo");
-                csv.NextRecord();
-                foreach (var file in files)
-                {
-                    csv.WriteField(file);
-                    csv.NextRecord();
-                }
-            }
             Console.WriteLine("\n--- Selecciona una opción ---");
             Console.WriteLine("1. Generar solo listado de archivos");
             Console.WriteLine("2. Generar solo procesamiento.");
@@ -80,14 +59,14 @@ namespace CertUAE.Services
             switch (generarRutero)
             {
                 case "1":
-                    Rutero(targetDirectory).Wait();
+                    Rutero(files).Wait();
                     break;
                 case "2":
                     this.directories = rootFiles;
                     ProcessDirectory(targetDirectory).Wait();
                     break;
                 case "3":
-                    Rutero(targetDirectory).Wait();
+                    Rutero(files).Wait();
                     this.directories = rootFiles;
                     ProcessDirectory(targetDirectory).Wait();
                     break;
@@ -97,33 +76,27 @@ namespace CertUAE.Services
             }
         }
 
-        private async Task Rutero(string targetDirectory)
+        private async Task Rutero(List<string> targetDirectory)
         {
-            var options = new EnumerationOptions
+            var options = new System.IO.EnumerationOptions
             {
                 RecurseSubdirectories = true,
                 MatchCasing = MatchCasing.CaseInsensitive,
                 IgnoreInaccessible = true
             };
-
-            List<string> files = new List<string>(Directory.EnumerateFiles(targetDirectory, "*.*", options));
-            string basePath = Path.Combine(targetDirectory, "Cert-SNR");
-            Directory.CreateDirectory(basePath);
-
-
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
-                Encoding = Encoding.UTF8,
+                Encoding = new UTF8Encoding(true),
                 ShouldQuote = args => true
             };
 
-            using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv")))
+            using (var writer = new StreamWriter(Path.Combine(basePath, "ListadoArchivos.csv"), false, new UTF8Encoding(true)))
             using (var csv = new CsvWriter(writer, config))
             {
                 csv.WriteField("NombreArchivo");
                 csv.NextRecord();
-                foreach (var file in files)
+                foreach (var file in targetDirectory.Order())
                 {
                     csv.WriteField(file);
                     csv.NextRecord();
@@ -142,7 +115,7 @@ namespace CertUAE.Services
             long totalbytes = 0;
             int totalXml = 0;
             DateTime begin = DateTime.Now;
-            
+
             foreach (var dir in this.directories)
             {
                 Console.WriteLine($"\n-- Carpeta: {dir} --");
@@ -224,11 +197,11 @@ namespace CertUAE.Services
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
-                Encoding = Encoding.Latin1,
+                Encoding = new UTF8Encoding(true),
                 ShouldQuote = _ => true
             };
 
-            using (var writer = new StreamWriter(Path.Combine(basePath, "pdf_report.csv")))
+            using (var writer = new StreamWriter(Path.Combine(basePath, "pdf_report.csv"), false, new UTF8Encoding(true)))
             using (var csv = new CsvWriter(writer, config))
             {
                 // Escribir el encabezado con los nuevos campos de metadatos
@@ -237,15 +210,36 @@ namespace CertUAE.Services
                 csv.WriteRecords(pdfReport);
             }
 
-            using (var writer = new StreamWriter(Path.Combine(basePath, "tiff_report.csv")))
+            using (var writer = new StreamWriter(Path.Combine(basePath, "tiff_report.csv"), false, new UTF8Encoding(true)))
             using (var csv = new CsvWriter(writer, config))
             {
                 csv.WriteHeader<TiffReportRow>();
                 csv.NextRecord();
                 csv.WriteRecords(tiffReport);
             }
+            
 
             List<GeneralReport> generalReport = new List<GeneralReport> {
+                 new GeneralReport()
+                {
+                    Item = "Equipo Evaluador",
+                    Total = Environment.MachineName
+                },
+                  new GeneralReport()
+                {
+                    Item = "Usuario Evaluador",
+                    Total = Environment.UserName
+                },
+                 new GeneralReport()
+                {
+                    Item = "Unidad Evaluada",
+                    Total = targetDirectory
+                },
+                  new GeneralReport()
+                {
+                    Item = "N° Serie",
+                    Total = GetHardDriveSerialNumber(targetDirectory.Replace("\\", ""))
+                },
                  new GeneralReport()
                 {
                     Item = "Total de PDFs",
@@ -284,7 +278,7 @@ namespace CertUAE.Services
 
             }
             ;
-            using (var writer = new StreamWriter(Path.Combine(basePath, "Cert.csv")))
+            using (var writer = new StreamWriter(Path.Combine(basePath, "Cert.csv"), false, new UTF8Encoding(true)))
             using (var csv = new CsvWriter(writer, config))
             {
                 csv.WriteHeader<GeneralReport>();
@@ -311,6 +305,28 @@ namespace CertUAE.Services
                 Console.WriteLine($"Error al interactuar con la base de datos: {ex.Message}");
             }
         }
+
+
+        private string GetHardDriveSerialNumber(string driveLetter)
+        {
+            try
+            {
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT VolumeSerialNumber FROM Win32_LogicalDisk WHERE DeviceID = '" + driveLetter + "'");
+
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    return obj["VolumeSerialNumber"].ToString();
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener el número de serie del disco duro ({driveLetter}): {ex.Message}");
+                Console.WriteLine("Asegúrate de que la referencia a 'System.Management' está añadida y que la aplicación se ejecuta con suficientes privilegios si es necesario.");
+                return "";
+            }
+        }
+
         public string CalcularYDiferencia(DateTime fechaInicio, DateTime fechaFin)
         {
             Console.WriteLine($"Calculando diferencia entre {fechaInicio:yyyy-MM-dd HH:mm} y {fechaFin:yyyy-MM-dd HH:mm}");

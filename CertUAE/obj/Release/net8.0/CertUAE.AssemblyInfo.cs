@@ -11,14 +11,15 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("CertUAE")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Jhonatan Moreno")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Jhonatan Moreno")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82af881ad84b9802bafbe0462ac31569c49b7ed0")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.2.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.2+ae24d4de7da319b338071958a0447e9ff70b7576")]
 [assembly: System.Reflection.AssemblyProductAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CertUAE")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("0.0.2.0")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/jhocamolu/CertUAE")]
 [assembly: System.Resources.NeutralResourcesLanguageAttribute("es-CO")]
 
 // Generado por la clase WriteCodeFragment de MSBuild.

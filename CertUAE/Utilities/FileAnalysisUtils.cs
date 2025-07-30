@@ -38,7 +38,7 @@ namespace CertUAE.Utilities
                 hash = $"Error calculando hash: {ex.Message}";
                 hashType = "N/A";
             }
-
+            
             return new FileInfoData
             {
                 Name = fileName,
@@ -47,6 +47,7 @@ namespace CertUAE.Utilities
                 Extension = fileExtension,
                 CreatedAt = fileInfo.CreationTime,
                 ModifiedAt = fileInfo.LastWriteTime,
+                HashCode = fileInfo.GetHashCode(),
                 Hash = hash,
                 HashType = hashType
             };
