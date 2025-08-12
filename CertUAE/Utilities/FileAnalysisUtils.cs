@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using UglyToad.PdfPig;
+using CertUAE.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Tiff;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using UglyToad.PdfPig; // Para PDF
-using CertUAE.Models; // Para FileInfoData y PdfMetadata
+using Spire.Pdf;
+using IronOcr;
+using System.Linq;
 
 namespace CertUAE.Utilities
 {
@@ -57,7 +59,7 @@ namespace CertUAE.Utilities
         {
             try
             {
-                using (var document = PdfDocument.Open(filePath))
+                using (var document = UglyToad.PdfPig.PdfDocument.Open(filePath))
                 {
                     return document.NumberOfPages;
                 }
@@ -74,11 +76,12 @@ namespace CertUAE.Utilities
             var metadata = new PdfMetadata();
             try
             {
-                using (var document = PdfDocument.Open(filePath))
+                using (var document = UglyToad.PdfPig.PdfDocument.Open(filePath))
                 {
                     metadata.PageCount = document.NumberOfPages;
 
                     var info = document.Information;
+
                     metadata.Author = info.Author;
                     metadata.Title = info.Title;
                     metadata.Subject = info.Subject;
@@ -140,6 +143,44 @@ namespace CertUAE.Utilities
             catch (Exception ex)
             {
                 return $"Error: {ex.Message}";
+            }
+        }
+
+        // NUEVOS MÉTODOS IMPLEMENTADOS
+        public PdfConformanceLevel ValidatePdfDigitalSignature(string filePath)
+        {
+            try
+            {
+                Spire.Pdf.PdfDocument doc = new Spire.Pdf.PdfDocument();
+                doc.LoadFromFile(filePath);
+                // Obtener el nivel de conformidad PDF
+                PdfConformanceLevel conformance = doc.Conformance;
+                return conformance;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al validar PDF/A de {filePath}: {ex.Message}");
+                return PdfConformanceLevel.None;
+            }
+        }
+
+        public bool HasOcrText(string filePath)
+        {
+            try
+            {
+                var ocr = new IronTesseract();
+                // La forma correcta en versiones recientes de IronOcr es pasar la ruta del archivo directamente al constructor de OcrInput
+                using (var input = new OcrInput(filePath))
+                {
+                    var result = ocr.Read(input);
+                    // Retorna true si hay texto detectado.
+                    return !string.IsNullOrWhiteSpace(result.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al detectar OCR en {filePath}: {ex.Message}");
+                return false;
             }
         }
     }

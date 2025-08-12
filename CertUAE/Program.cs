@@ -5,14 +5,16 @@ using CertUAE.Models;
 using CertUAE.Services;
 using CertUAE.Utilities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging; // Importar para logging
 using System;
 using System.Threading.Tasks;
+using System.IO; // Importar para Directory.Exists y Directory.CreateDirectory
 
 namespace CertUAE
 {
     public class Program
     {
-        public static async Task Main(string[] args) // Cambiado a async Task Main
+        public static async Task Main(string[] args)
         {
             // Configuración del Host para Inyección de Dependencias
             IHost host = Host.CreateDefaultBuilder(args)
@@ -38,7 +40,7 @@ namespace CertUAE
                         if (string.IsNullOrEmpty(connectionString))
                         {
                             Console.WriteLine("La cadena de conexión no fue proporcionada o es inválida. La aplicación no puede continuar.");
-                            Environment.Exit(1);
+                            Environment.Exit(1); // Sale de la aplicación si no hay cadena de conexión
                         }
 
                         var optionsBuilder = new DbContextOptionsBuilder<CertDbContext>();
@@ -48,48 +50,73 @@ namespace CertUAE
                 })
                 .Build();
 
-            do
-            {
+            // Obtener una instancia del logger para la clase Program
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-                using (var scope = host.Services.CreateScope())
+            bool continueRunning = true;
+            while (continueRunning) // Bucle principal que permite el reinicio automático
+            {
+                try
                 {
-                    // Lógica de selección de funcionalidad
-                    Console.WriteLine("\n--- Selecciona una opción ---");
-                    Console.WriteLine("1. Escanear archivos y generar reportes.");
-                    Console.WriteLine("2. Generar diccionario de datos de la base de datos.");
-                    Console.Write("Tu opción: ");
-                    string option = Console.ReadLine();
-                    switch (option)
+                    using (var scope = host.Services.CreateScope())
                     {
-                        case "1":
-                            var fileScannerService = scope.ServiceProvider.GetRequiredService<IFileScannerService>();
-                            fileScannerService.RunScanner();
-                            break;
-                        case "2":
-                            var dataDictionaryService = scope.ServiceProvider.GetRequiredService<IDataDictionaryService>();
-                            Console.Write("Introduce la ruta para guardar el diccionario de datos (ej: C:\\temp\\reports): ");
-                            string outputPath = Console.ReadLine();
-                            if (!Directory.Exists(outputPath))
-                            {
-                                Console.WriteLine($"Creando directorio de salida: {outputPath}");
-                                Directory.CreateDirectory(outputPath);
-                            }
-                            await dataDictionaryService.GenerateDataDictionaryCsv(outputPath); // Llamada asíncrona
-                            break;
-                        default:
-                            Console.WriteLine("Opción inválida. Saliendo.");
-                            break;
+                        // Lógica de selección de funcionalidad
+                        Console.WriteLine("\n--- Selecciona una opción ---");
+                        Console.WriteLine("1. Escanear archivos y generar reportes.");
+                        Console.WriteLine("2. Generar diccionario de datos de la base de datos.");
+                        Console.WriteLine("9. Finalizar."); // Opción para salir del programa
+                        Console.Write("Tu opción: ");
+                        string option = Console.ReadLine();
+
+                        switch (option)
+                        {
+                            case "1":
+                                var fileScannerService = scope.ServiceProvider.GetRequiredService<IFileScannerService>();
+                                fileScannerService.RunScanner(); // Asumiendo que RunScanner() es síncrono o maneja su propia asincronía
+                                break;
+                            case "2":
+                                var dataDictionaryService = scope.ServiceProvider.GetRequiredService<IDataDictionaryService>();
+                                Console.Write("Introduce la ruta para guardar el diccionario de datos (ej: C:\\temp\\reports): ");
+                                string outputPath = Console.ReadLine();
+                                if (!Directory.Exists(outputPath))
+                                {
+                                    Console.WriteLine($"Creando directorio de salida: {outputPath}");
+                                    Directory.CreateDirectory(outputPath);
+                                }
+                                await dataDictionaryService.GenerateDataDictionaryCsv(outputPath); // Llamada asíncrona
+                                break;
+                            case "9":
+                                continueRunning = false; // Establece la bandera para salir del bucle
+                                Console.WriteLine("Saliendo de la aplicación.");
+                                break;
+                            default:
+                                Console.WriteLine("Opción inválida. Por favor, intenta de nuevo.");
+                                break;
+                        }
+                    }
+                    if (continueRunning) // Solo muestra este mensaje si no se ha elegido salir
+                    {
+                        Console.WriteLine($"Escaneo/Proceso finalizado: {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
+                        Console.WriteLine("Presiona cualquier tecla para continuar...");
+                        Console.ReadKey(); // Espera una tecla antes de limpiar la consola
+                        Console.Clear();
                     }
                 }
-                Console.WriteLine($"Escaneo directorio finalizo: {DateTime.Now.ToString(format: "yyyy-MM-dd HH:mm")}");
-                Console.Clear();
-                Console.WriteLine("0. Regresar Menu.");
-                Console.WriteLine("9. Finalizar.");
-               
-            } while ("0" == Console.ReadLine());
+                catch (Exception ex)
+                {
+                    // Registra la excepción utilizando el logger
+                    logger.LogError(ex, "Ocurrió un error inesperado en la aplicación. El programa intentará reiniciar.");
+
+                    // Informa al usuario sobre el error
+                    Console.WriteLine($"\n¡ERROR! Ocurrió un error inesperado: {ex.Message}");
+                    Console.WriteLine("El programa intentará reiniciar en 5 segundos...");
+                    await Task.Delay(5000); // Espera 5 segundos antes de volver a intentar
+                    Console.Clear(); // Limpia la consola para un "reinicio" visual
+                }
+            }
+
             Console.WriteLine("\n--- Proceso finalizado. Presiona cualquier tecla para salir ---");
-            Console.ReadKey();
+            Console.ReadKey(); // Espera la entrada del usuario antes de que la consola se cierre
         }
     }
 }
-

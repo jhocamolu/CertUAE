@@ -142,6 +142,9 @@ namespace CertUAE.Services
 
                     int diff = ((pdfMetadata != null) ? pdfMetadata.PageCount : 0) - tiffs.Count; // Usa el conteo de páginas de los metadatos
 
+                    var isSigned = _fileAnalysisUtils.ValidatePdfDigitalSignature(pdfPath);
+                    bool hasOcr = _fileAnalysisUtils.HasOcrText(pdfPath);
+
                     pdfReport.Add(new PdfReportRow
                     {
                         Nombre = fileData.Name,
@@ -158,8 +161,10 @@ namespace CertUAE.Services
                         PdfProducer = pdfMetadata?.Producer,
                         PdfHashType = fileData.HashType,
                         PdfHash = fileData.Hash,
-                        PdfCreationDate = fileData.CreatedAt,
-                        PdfModificationDate = fileData.ModifiedAt,
+                        PdfCreationDate = pdfMetadata.CreationDate,
+                        PdfModificationDate = pdfMetadata.ModDate,
+                        Sellado = isSigned,
+                        ContieneOCR = hasOcr ? "Si" : "No",
                         PdfDescription = pdfMetadata?.Keywords
                     });
 

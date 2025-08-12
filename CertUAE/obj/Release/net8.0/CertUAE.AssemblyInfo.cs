@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Jhonatan Moreno")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.2.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.2+ae24d4de7da319b338071958a0447e9ff70b7576")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.2+fa1e6ab3b5ccd3e9dc8c88bff428d0f3810678e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CertUAE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.0.2.0")]

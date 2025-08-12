@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Spire.Pdf;
 
 namespace CertUAE.Models
 {
@@ -27,6 +28,9 @@ namespace CertUAE.Models
         public string? PdfHash { get; set; }
         public DateTime? PdfCreationDate { get; set; }
         public DateTime? PdfModificationDate { get; set; }
+
+        public PdfConformanceLevel Sellado { get; set; }
+        public string ContieneOCR { get; set; }
         public string? PdfDescription { get; set; }
     }
 }
