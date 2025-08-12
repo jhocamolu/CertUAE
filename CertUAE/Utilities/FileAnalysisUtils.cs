@@ -40,7 +40,7 @@ namespace CertUAE.Utilities
                 hash = $"Error calculando hash: {ex.Message}";
                 hashType = "N/A";
             }
-            
+
             return new FileInfoData
             {
                 Name = fileName,
@@ -164,18 +164,38 @@ namespace CertUAE.Utilities
             }
         }
 
+
+
         public bool HasOcrText(string filePath)
         {
             try
             {
+                // Creamos el OCR engine
                 var ocr = new IronTesseract();
-                // La forma correcta en versiones recientes de IronOcr es pasar la ruta del archivo directamente al constructor de OcrInput
-                using (var input = new OcrInput(filePath))
+                // Determinamos cuántas páginas tiene el PDF
+                int totalPages;
+                using (var docs = UglyToad.PdfPig.PdfDocument.Open(filePath)) // O usar otro método para contar
                 {
-                    var result = ocr.Read(input);
-                    // Retorna true si hay texto detectado.
-                    return !string.IsNullOrWhiteSpace(result.Text);
+                    totalPages = docs.NumberOfPages;
                 }
+                List<int> paginas = new List<int>();
+                if (totalPages > 10)
+                {
+                    paginas = Enumerable.Range(0, 10).ToList(); // 0-based: primeras 10 páginas
+                }
+
+                // Construimos el input pasando los índices
+                using var pdfInput = paginas.Any()
+                    ? new OcrPdfInput(filePath, PageIndices: paginas)
+                    : new OcrPdfInput(filePath);
+
+                var result = ocr.Read(pdfInput);
+                bool tieneTexto = result.Pages.Any(p =>
+                    p.Words.Any(w => !string.IsNullOrWhiteSpace(w.Text))
+                );
+
+                return tieneTexto;
+
             }
             catch (Exception ex)
             {
@@ -183,5 +203,7 @@ namespace CertUAE.Utilities
                 return false;
             }
         }
+
+
     }
 }
